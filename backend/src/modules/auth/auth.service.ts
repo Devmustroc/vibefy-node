@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import {LoginInput, RegisterInput} from "../../types/authentification.types";
+import {LoginInput, RegisterInput, UpdateProfile} from './auth.validation';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -64,5 +64,59 @@ export class AuthService {
       },
         token
     };
+  }
+
+  static async updateProfile(userId: string, input: UpdateProfile) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const updateData = {} as UpdateProfile;
+
+    if (input.name) {
+      updateData.name = input.name;
+    }
+    if (input.currentPassword && input.newPassword) {
+      const isPasswordValid = await bcrypt.compare(input.currentPassword, user.password);
+
+        if (!isPasswordValid) {
+            throw new Error('Invalid password');
+        }
+
+        updateData.newPassword = await bcrypt.hash(input.newPassword, 10);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      }
+    });
+
+    return updatedUser;
+  }
+
+  static async getProfile(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user;
   }
 }

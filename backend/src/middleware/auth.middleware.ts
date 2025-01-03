@@ -20,7 +20,12 @@ export const authenticateToken = async (
 ) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer token
+
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const token = authHeader.split(' ')[1]; // Bearer token
 
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -57,7 +62,11 @@ export const optionalAuthenticateToken = async (
 ) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!authHeader) {
+        return next();
+    }
+    const token = authHeader.split(' ')[1];
 
     if (!token) {
       return next();
