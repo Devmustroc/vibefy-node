@@ -4,7 +4,7 @@ import { authenticateToken } from '../../middleware/auth.middleware';
 
 const router = Router();
 
-// All routes require authentication
+// All routes require authentications
 router.use(authenticateToken);
 
 // Playlist management
