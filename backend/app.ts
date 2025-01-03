@@ -20,10 +20,10 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
+/*app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/playlists', playlistRoutes);
-app.use('/api/tracks', trackRoutes);
+app.use('/api/tracks', trackRoutes);*/
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
